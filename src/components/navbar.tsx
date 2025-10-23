@@ -4,12 +4,16 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Menu, X, Home, Users, Heart, LogOut, UserPlus, LogIn } from "lucide-react";
 import { useState } from "react";
+import React from "react";
+import { NavLink } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { theme, toggle } = useTheme();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -20,7 +24,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="w-full glass border-b border-border/50 backdrop-blur-md sticky top-0 z-50">
+    <nav className="w-full glass border-b border-border/50 backdrop-blur-md sticky top-0 z-50" role="navigation" aria-label="Main navigation">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -191,6 +195,32 @@ export function Navbar() {
             )}
           </div>
         </div>
+      </div>
+
+      {/* More visible theme switch (pill with moving knob) */}
+      <div className="absolute right-4 top-4 md:top-3">
+        <button
+          role="switch"
+          aria-checked={theme === "dark"}
+          aria-label="Toggle theme"
+          title="Toggle theme"
+          onClick={toggle}
+          className={`relative inline-flex items-center w-14 h-8 p-1 rounded-full transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+            theme === "dark" ? "bg-slate-700" : "bg-yellow-100"
+          }`}
+        >
+          {/* Sun (left) and Moon (right) indicators */}
+          <span className="absolute left-1 text-xs pointer-events-none select-none">☀️</span>
+          <span className="absolute right-1 text-xs pointer-events-none select-none">🌙</span>
+
+          {/* Knob */}
+          <span
+            className={`inline-block w-6 h-6 bg-white rounded-full shadow transform transition-transform duration-200 ${
+              theme === "dark" ? "translate-x-6" : "translate-x-0"
+            }`}
+          />
+          <span className="sr-only">Toggle theme</span>
+        </button>
       </div>
     </nav>
   );
