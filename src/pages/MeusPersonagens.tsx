@@ -3,6 +3,8 @@ import { api } from "../api/axios";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import { CharacterCard } from "@/components/charactercard";
+import { Heart, Plus, Loader2, Users } from "lucide-react";
 
 export default function MeusPersonagens() {
   const [items, setItems] = useState<any[]>([]);
@@ -15,62 +17,105 @@ export default function MeusPersonagens() {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <p className="p-6 text-center">Carregando...</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="flex items-center gap-3">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <span className="text-xl text-muted-foreground">Carregando seus favoritos...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-6xl mx-auto p-6 space-y-6">
-      <h1 className="text-2xl font-bold">Meus Personagens</h1>
+    <div className="min-h-screen p-6 space-y-8 animate-fade-in">
+      {/* Header Section */}
+      <div className="text-center space-y-6 py-8">
+        <div className="flex items-center justify-center gap-3">
+          <Heart className="w-8 h-8 text-primary animate-bounce-gentle" />
+          <h1 className="text-4xl font-bold gradient-rm-text">Meus Personagens</h1>
+          <Heart className="w-8 h-8 text-primary animate-bounce-gentle" />
+        </div>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          Seus personagens favoritos do multiverso
+        </p>
+      </div>
 
       {items.length === 0 ? (
-        <p>Nenhum personagem salvo ainda.</p>
+        <div className="text-center py-16">
+          <Card className="max-w-md mx-auto glass hover-lift">
+            <CardContent className="p-8 space-y-6">
+              <div className="w-16 h-16 mx-auto bg-muted/50 rounded-full flex items-center justify-center">
+                <Heart className="w-8 h-8 text-muted-foreground" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-xl font-semibold">Nenhum favorito ainda</h3>
+                <p className="text-muted-foreground">
+                  Comece explorando personagens e salvando seus favoritos
+                </p>
+              </div>
+              <Button 
+                onClick={() => navigate("/personagens")}
+                className="gradient-rm hover:shadow-lg hover:scale-105 transition-all duration-200"
+              >
+                <Plus className="w-4 h-4 mr-2" />
+                Explorar Personagens
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {items.map((c) => (
-            <Card
-              key={c.id}
-              className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer"
-              onClick={() =>
-                navigate(`/personagens/${c.id}`, {
-                  state: { from: "meus", originalId: c.original_character_id },
-                })
-              }
-            >
-              <img src={c.image} alt={c.name} className="w-full h-56 object-cover" />
+        <>
+          {/* Stats */}
+          <div className="text-center">
+            <Card className="max-w-md mx-auto glass">
               <CardContent className="p-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-semibold">{c.name}</h2>
-                  <span
-                    className={`text-xs px-2 py-1 rounded-full ${
-                      c.status === "Alive"
-                        ? "bg-green-100 text-green-700"
-                        : c.status === "Dead"
-                        ? "bg-red-100 text-red-700"
-                        : "bg-gray-100 text-gray-700"
-                    }`}
-                  >
-                    {c.status}
+                <div className="flex items-center justify-center gap-2">
+                  <Users className="w-5 h-5 text-primary" />
+                  <span className="text-lg font-semibold">{items.length}</span>
+                  <span className="text-muted-foreground">
+                    {items.length === 1 ? 'personagem favorito' : 'personagens favoritos'}
                   </span>
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {c.species} • {c.gender}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  Origem: {c.origin}
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  Local: {c.location}
-                </p>
               </CardContent>
             </Card>
-          ))}
-        </div>
-      )}
+          </div>
 
-      <div className="text-center pt-4">
-        <Button onClick={() => navigate("/personagens")}>
-          Adicionar mais personagens
-        </Button>
-      </div>
+          {/* Characters Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {items.map((character, index) => (
+              <div 
+                key={character.id}
+                className="animate-scale-in"
+                style={{ animationDelay: `${index * 0.05}s` }}
+              >
+                <div 
+                  className="cursor-pointer"
+                  onClick={() =>
+                    navigate(`/personagens/${character.id}`, {
+                      state: { from: "meus", originalId: character.original_character_id },
+                    })
+                  }
+                >
+                  <CharacterCard {...character} />
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Add More Button */}
+          <div className="text-center pt-8">
+            <Button 
+              onClick={() => navigate("/personagens")}
+              className="gradient-rm hover:shadow-lg hover:scale-105 transition-all duration-200"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Adicionar mais personagens
+            </Button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

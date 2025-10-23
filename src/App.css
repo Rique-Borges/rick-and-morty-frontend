@@ -1,42 +1,89 @@
+/* App-specific styles */
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Loading states */
+.loading-skeleton {
+  background: linear-gradient(90deg, 
+    oklch(0.95 0.02 106) 25%, 
+    oklch(0.9 0.02 106) 50%, 
+    oklch(0.95 0.02 106) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
+.dark .loading-skeleton {
+  background: linear-gradient(90deg, 
+    oklch(0.18 0.02 106) 25%, 
+    oklch(0.15 0.02 106) 50%, 
+    oklch(0.18 0.02 106) 75%);
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
   }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
+  100% {
+    background-position: -200% 0;
   }
 }
 
-.card {
-  padding: 2em;
+/* Character card enhancements */
+.character-card {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.read-the-docs {
-  color: #888;
+.character-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, 
+    oklch(0.6 0.15 142 / 0.1) 0%, 
+    oklch(0.5 0.15 240 / 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 1;
+}
+
+.character-card:hover::before {
+  opacity: 1;
+}
+
+.character-card img {
+  transition: transform 0.3s ease;
+}
+
+.character-card:hover img {
+  transform: scale(1.05);
+}
+
+/* Page transitions */
+.page-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.page-exit {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.page-exit-active {
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }

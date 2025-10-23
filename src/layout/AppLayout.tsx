@@ -3,10 +3,13 @@ import type { ReactNode } from "react";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col animate-fade-in">
       <Navbar />
-      <main className="flex-1 bg-gray-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
-        {children}
+      <main className="flex-1 relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20"></div>
+        <div className="relative z-10">
+          {children}
+        </div>
       </main>
     </div>
   );

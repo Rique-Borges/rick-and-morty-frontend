@@ -1,59 +1,92 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Menu } from "lucide-react";
+import { Menu, X, Home, Users, Heart, LogOut, UserPlus, LogIn } from "lucide-react";
 import { useState } from "react";
 
 export function Navbar() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [open, setOpen] = useState(false);
 
+  const isActive = (path: string) => location.pathname === path;
+
+  const navItems = [
+    { path: "/home", label: "Home", icon: Home },
+    { path: "/personagens", label: "Personagens", icon: Users },
+    ...(user ? [{ path: "/meus-personagens", label: "Meus Personagens", icon: Heart }] : []),
+  ];
+
   return (
-    <nav className="w-full bg-white shadow-sm dark:bg-neutral-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <nav className="w-full glass border-b border-border/50 backdrop-blur-md sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div
-            className="text-xl font-bold cursor-pointer select-none"
+            className="flex items-center space-x-2 cursor-pointer select-none group"
             onClick={() => navigate("/home")}
           >
-            Innovitas Test
+            <div className="w-8 h-8 gradient-rm rounded-lg flex items-center justify-center text-white font-bold text-sm animate-pulse-glow">
+              R&M
+            </div>
+            <span className="text-xl font-bold gradient-rm-text group-hover:scale-105 transition-transform duration-200">
+              Rick & Morty
+            </span>
           </div>
 
           {/* Links desktop */}
-          <div className="hidden md:flex items-center space-x-4">
-            <Link to="/home" className="hover:text-blue-500">
-              Home
-            </Link>
-            <Link to="/personagens" className="hover:text-blue-500">
-              Personagens
-            </Link>
-            {user && (
-              <Link to="/meus-personagens" className="hover:text-blue-500">
-                Meus Personagens
-              </Link>
-            )}
+          <div className="hidden md:flex items-center space-x-1">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-200 hover-lift ${
+                    isActive(item.path)
+                      ? "bg-primary text-primary-foreground shadow-lg"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                  }`}
+                >
+                  <Icon className="w-4 h-4" />
+                  <span className="font-medium">{item.label}</span>
+                </Link>
+              );
+            })}
           </div>
 
-          {/* Ações */}
+          {/* User actions */}
           <div className="hidden md:flex items-center gap-3">
             {!user ? (
               <>
-                <Button variant="outline" size="sm" onClick={() => navigate("/login")}>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => navigate("/login")}
+                  className="hover-glow"
+                >
+                  <LogIn className="w-4 h-4 mr-2" />
                   Login
                 </Button>
-                <Button size="sm" onClick={() => navigate("/register")}>
+                <Button 
+                  size="sm" 
+                  onClick={() => navigate("/register")}
+                  className="gradient-rm hover:shadow-lg hover:scale-105 transition-all duration-200"
+                >
+                  <UserPlus className="w-4 h-4 mr-2" />
                   Registrar
                 </Button>
               </>
             ) : (
-              <div className="flex items-center gap-2">
-                <Avatar className="w-8 h-8 bg-blue-500 text-white text-sm">
-                  <AvatarFallback>{user?.name?.[0] ?? "?"}</AvatarFallback>
-                </Avatar>
-                <span className="text-sm">{user.name}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/50">
+                  <Avatar className="w-8 h-8 gradient-rm text-white text-sm">
+                    <AvatarFallback>{user?.name?.[0] ?? "?"}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium">{user.name}</span>
+                </div>
                 <Button
                   variant="destructive"
                   size="sm"
@@ -61,77 +94,104 @@ export function Navbar() {
                     logout();
                     navigate("/login");
                   }}
+                  className="hover-glow"
                 >
+                  <LogOut className="w-4 h-4 mr-2" />
                   Sair
                 </Button>
               </div>
             )}
           </div>
 
-          {/* Menu mobile */}
+          {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <Button variant="ghost" size="icon" onClick={() => setOpen(!open)}>
-              <Menu className="w-5 h-5" />
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setOpen(!open)}
+              className="hover-glow"
+            >
+              {open ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
           </div>
         </div>
       </div>
 
-      {/* Dropdown mobile */}
-      {open && (
-        <div className="md:hidden px-4 pb-4 space-y-2 bg-white dark:bg-neutral-900 border-t">
-          <Link to="/home" onClick={() => setOpen(false)} className="block">
-            Home
-          </Link>
-          <Link to="/personagens" onClick={() => setOpen(false)} className="block">
-            Personagens
-          </Link>
-          {user && (
-            <Link to="/meus-personagens" onClick={() => setOpen(false)} className="block">
-              Meus Personagens
-            </Link>
-          )}
-          <div className="pt-2 border-t">
+      {/* Mobile menu */}
+      <div className={`md:hidden transition-all duration-300 ease-in-out ${
+        open ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+      } overflow-hidden`}>
+        <div className="px-4 pb-4 space-y-2 bg-card/50 backdrop-blur-md border-t border-border/50">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={() => setOpen(false)}
+                className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-all duration-200 hover-lift ${
+                  isActive(item.path)
+                    ? "bg-primary text-primary-foreground shadow-lg"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                <Icon className="w-5 h-5" />
+                <span className="font-medium">{item.label}</span>
+              </Link>
+            );
+          })}
+          
+          <div className="pt-4 border-t border-border/50 space-y-2">
             {!user ? (
               <>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="w-full"
+                  className="w-full hover-glow"
                   onClick={() => {
                     setOpen(false);
                     navigate("/login");
                   }}
                 >
+                  <LogIn className="w-4 h-4 mr-2" />
                   Login
                 </Button>
                 <Button
                   size="sm"
-                  className="w-full mt-2"
+                  className="w-full gradient-rm hover:shadow-lg transition-all duration-200"
                   onClick={() => {
                     setOpen(false);
                     navigate("/register");
                   }}
                 >
+                  <UserPlus className="w-4 h-4 mr-2" />
                   Registrar
                 </Button>
               </>
             ) : (
-              <Button
-                variant="destructive"
-                size="sm"
-                className="w-full"
-                onClick={() => {
-                  logout();
-                  navigate("/login");
-                }}
-              >
-                Sair
-              </Button>
+              <div className="flex items-center justify-between px-4 py-2">
+                <div className="flex items-center gap-2">
+                  <Avatar className="w-8 h-8 gradient-rm text-white text-sm">
+                    <AvatarFallback>{user?.name?.[0] ?? "?"}</AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium">{user.name}</span>
+                </div>
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
+                  className="hover-glow"
+                >
+                  <LogOut className="w-4 h-4" />
+                </Button>
+              </div>
             )}
           </div>
         </div>
-      )}
+      </div>
     </nav>
   );
 }
