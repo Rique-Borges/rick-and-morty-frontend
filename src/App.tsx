@@ -1,35 +1,62 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { AuthProvider } from "./context/AuthContext";
+import { PrivateRoute } from "./routes/PrivateRoutes.tsx";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Personagens from "./pages/Personagens";
+import PersonagemDetalhe from "./pages/PersonagemDetalhe";
+import MeusPersonagens from "./pages/MeusPersonagens";
+import { AppLayout } from "./layout/AppLayout";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/" element={<Navigate to="/home" replace />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
 
-export default App
+          {/* Rotas com layout global */}
+          <Route
+            path="/home"
+            element={
+              <AppLayout>
+                <PrivateRoute>
+                  <Home />
+                </PrivateRoute>
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/personagens"
+            element={
+              <AppLayout>
+                <Personagens />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/personagens/:id"
+            element={
+              <AppLayout>
+                <PersonagemDetalhe />
+              </AppLayout>
+            }
+          />
+          <Route
+            path="/meus-personagens"
+            element={
+              <AppLayout>
+                <PrivateRoute>
+                  <MeusPersonagens />
+                </PrivateRoute>
+              </AppLayout>
+            }
+          />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
