@@ -54,7 +54,7 @@ export default function Home() {
         <div className="flex items-center justify-center gap-2 mb-4">
           <Sparkles className="w-8 h-8 text-primary animate-bounce-gentle" />
           <h1 className="text-5xl font-bold gradient-rm-text">
-            Bem-vindo, {user?.name || 'Explorador'}!
+            Bem-vindo ao mundo {user?.name || 'de Rick and Morty'}!
           </h1>
           <Sparkles className="w-8 h-8 text-primary animate-bounce-gentle" />
         </div>

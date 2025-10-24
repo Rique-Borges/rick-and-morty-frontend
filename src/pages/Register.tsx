@@ -163,15 +163,6 @@ export default function Register() {
             </div>
           </CardContent>
         </Card>
-
-        {/* Additional Info */}
-        <Card className="glass">
-          <CardContent className="p-4 text-center">
-            <p className="text-xs text-muted-foreground">
-              Ao criar uma conta, você concorda com nossos termos de serviço e política de privacidade
-            </p>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
